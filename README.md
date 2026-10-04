@@ -69,3 +69,30 @@ npm run build
   `frontend/src/data/seed.ts`。
 - 状态流转只允许在 `local-service.ts` 里改，页面组件不做业务判断。
 - 想回到初始数据：清掉浏览器里 `pv-plant-ops:entries` 这一项，或调用 `resetModule(模块)`。
+
+## 辐照监测：校准事务、权限与台账（重点约定）
+
+辐照监测模块在通用列表之外多一层业务域，相关代码：
+
+- `frontend/src/data/irradiance-rules.ts`：坏值判定线（缺测 / 超量程 / 峰均倒挂 / 温度越界），
+  规则常量 `IRRADIANCE_RULE_VERSION` 即「判定线版本」，改线后把版本加一，已录读数会照新线重放。
+- `frontend/src/data/irradiance-domain.ts`：纯函数业务域。安排校准、确认恢复都同时改
+  「监测状态 + 当日辐照量口径 + pending/abnormal 标记 + 告警待处置台账」，
+  末尾做一致性断言（`assertInvariant`），任一步不成立就抛错、整笔退回。
+- `frontend/src/data/ledger.ts`：校准结论落到告警事件模块的「辐照校准待处置台账」，
+  同一监测点只有一条未闭环台账；数据异常点数 + 待校准点数必须等于待处置台账条数。
+- `frontend/src/api/irradiance-service.ts`：查询（片区筛选 / 辐照量排序坏值沉底 /
+  条件随 URL 翻页）、点位定位（找不到时写明是编号格还是筛选格对不上）、
+  按点位加锁的动作入口（连点两次只认头一回）。
+- 权限在 `frontend/src/stores/session.ts`：值班管理员、调度员、设备专责、只读访客四种角色，
+  页面右上角可切换演示；越权/越级当场拦截并指出还差哪一步；
+  安装高度只允许本监测点的设备专责修改。
+- 兼容既有记录：老数据缺片区/安装时间会在加载迁移时补齐，缺读数流水的记录沿用原状态与标记。
+
+测试（纯函数域 + 服务层，不依赖浏览器）：
+
+```bash
+cd frontend
+npm test
+```
+

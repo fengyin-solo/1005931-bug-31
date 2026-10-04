@@ -3,7 +3,7 @@
     <header class="page-head">
       <div>
         <h2>告警事件管理</h2>
-        <p class="page-desc">维护告警事件，围绕告警编号、告警等级、告警来源、发生时间做登记、筛选与状态流转。</p>
+        <p class="page-desc">辐照校准结论统一落到本页「待处置台账」；台账上的数据异常点数与辐照监测页实时对账，对不上整笔退回。</p>
       </div>
       <div class="page-actions">
         <button class="btn primary" type="button" @click="openCreate">登记告警事件</button>
@@ -12,18 +12,66 @@
     </header>
 
     <div class="stat-row">
-      <article v-for="item in stats" :key="item.label" class="stat-card">
+      <article v-for="item in ledgerStats" :key="item.label" class="stat-card">
         <span class="stat-label">{{ item.label }}</span>
-        <strong class="stat-value">{{ item.value }}</strong>
+        <strong class="stat-value" :class="{ 'stat-alert': item.alert }">{{ item.value }}</strong>
+        <small v-if="item.hint" class="stat-hint">{{ item.hint }}</small>
       </article>
     </div>
 
-    <p class="status-legend">
-      <span v-for="item in statusSummary" :key="item.status" class="legend-item">
-        {{ item.status }}：{{ item.count }}
-      </span>
+    <h3 class="block-title">辐照校准待处置台账</h3>
+    <p class="reconcile-line" :class="reconciled ? 'ok-text' : 'error-text'">
+      {{ reconcileText }}
     </p>
+    <table class="data-table ledger-table">
+      <thead>
+        <tr>
+          <th>台账编号</th><th>告警等级</th><th>关联监测点</th><th>发生时间</th>
+          <th>处置人员</th><th>台账状态</th><th>校准结论</th><th>闭环时间</th><th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in openLedgers" :key="item.id">
+          <td>{{ item.code }}</td>
+          <td><span class="status-tag" :class="item.level === '严重' ? 'is-abnormal' : 'is-pending'">{{ item.level }}</span></td>
+          <td>{{ item.pointCode }}</td>
+          <td>{{ item.happenedAt }}</td>
+          <td>{{ item.handler || '—' }}</td>
+          <td><span class="status-tag" :class="item.status === '处理中' ? 'is-pending' : 'is-abnormal'">{{ item.status }}</span></td>
+          <td>{{ item.conclusion || '待校准回填结论' }}</td>
+          <td>—</td>
+          <td class="row-actions">
+            <button class="link" type="button" @click="claim(item.id)">认领处置</button>
+          </td>
+        </tr>
+        <tr v-if="!openLedgers.length">
+          <td colspan="9" class="empty-state">待处置台账已清空，辐照监测点均无未闭环校准事项</td>
+        </tr>
+      </tbody>
+    </table>
 
+    <details class="closed-ledger">
+      <summary>已闭环校准台账（{{ closedLedgers.length }}）</summary>
+      <table class="data-table ledger-table">
+        <thead>
+          <tr><th>台账编号</th><th>关联监测点</th><th>处置人员</th><th>校准结论</th><th>闭环时间</th></tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in closedLedgers" :key="item.id">
+            <td>{{ item.code }}</td>
+            <td>{{ item.pointCode }}</td>
+            <td>{{ item.handler || '—' }}</td>
+            <td>{{ item.conclusion }}</td>
+            <td>{{ item.closedAt }}</td>
+          </tr>
+          <tr v-if="!closedLedgers.length">
+            <td colspan="5" class="empty-state">暂无已闭环台账</td>
+          </tr>
+        </tbody>
+      </table>
+    </details>
+
+    <h3 class="block-title second-block">普通告警事件</h3>
     <form class="filter-bar" @submit.prevent="reload">
       <label v-for="field in filterFields" :key="field" class="filter-item">
         <span>{{ field }}</span>
@@ -42,7 +90,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="row in rows" :key="String(row.id)">
+        <tr v-for="row in genericRows" :key="String(row.id)">
           <td v-for="column in columns" :key="column">{{ row[column] ?? '—' }}</td>
           <td>{{ row.status }}</td>
           <td class="row-actions">
@@ -57,14 +105,14 @@
             </button>
           </td>
         </tr>
-        <tr v-if="!rows.length">
-          <td :colspan="columns.length + 2" class="empty-state">暂无告警事件数据，可先登记告警事件</td>
+        <tr v-if="!genericRows.length">
+          <td :colspan="columns.length + 2" class="empty-state">暂无普通告警事件</td>
         </tr>
       </tbody>
     </table>
 
     <footer class="page-foot">
-      <span>共 {{ total }} 条告警事件记录</span>
+      <span>共 {{ genericRows.length }} 条普通告警，台账口径只统计辐照校准事项</span>
       <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
     </footer>
   </section>
@@ -75,29 +123,73 @@ import { computed, onMounted, ref } from 'vue'
 
 import {
   downloadEntries,
-  listEntries,
+  filterRows,
+  listRowsSafe,
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { listCalibrationLedgers, startLedgerDisposal } from '@/api/ledger-service'
+import { isLedger } from '@/data/ledger'
+import { useSessionStore } from '@/stores/session'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('alarm')
-const columns = ["告警编号", "告警等级", "告警来源", "发生时间", "持续时长", "关联设备", "处置人员", "告警状态"]
-const actions = ["确认告警", "登记恢复", "转缺陷单"]
-const statuses = ["待确认", "处理中", "已恢复", "已转缺陷"]
-const stats = [{"label": "待确认告警", "value": 0}, {"label": "处理中告警", "value": 0}, {"label": "今日恢复告警", "value": 0}]
+const store = useSessionStore()
+const columns = ['告警编号', '告警等级', '告警来源', '发生时间', '持续时长', '关联设备', '处置人员', '告警状态']
+const actions = ['确认告警', '登记恢复', '转缺陷单']
 
-const rows = ref<EntryRow[]>([])
-const total = ref(0)
+const genericRows = ref<EntryRow[]>([])
+const openLedgers = ref<ReturnType<typeof listCalibrationLedgers>['open']>([])
+const closedLedgers = ref<ReturnType<typeof listCalibrationLedgers>['closed']>([])
+const counters = ref({ 数据异常点数: 0, 待校准点数: 0, 待处置台账: 0, 已闭环台账: 0 })
 const errorMessage = ref('')
 const filters = ref<Record<string, string>>({})
 const filterFields = columns.slice(0, 3)
-const statusSummary = computed(() =>
-  statuses.map((status: string) => ({
-    status,
-    count: rows.value.filter((row) => String(row.status) === status).length,
-  })),
+
+const ledgerStats = computed(() => [
+  {
+    label: '数据异常点（辐照页口径）',
+    value: counters.value.数据异常点数,
+    hint: '',
+    alert: counters.value.数据异常点数 > 0,
+  },
+  {
+    label: '待校准设备（辐照页口径）',
+    value: counters.value.待校准点数,
+    hint: '',
+    alert: counters.value.待校准点数 > 0,
+  },
+  {
+    label: '待处置校准台账',
+    value: counters.value.待处置台账,
+    hint: `应等于前两项之和 ${counters.value.数据异常点数 + counters.value.待校准点数}`,
+    alert: counters.value.待处置台账 !== counters.value.数据异常点数 + counters.value.待校准点数,
+  },
+  { label: '已闭环台账', value: counters.value.已闭环台账, hint: '', alert: false },
+])
+
+const reconciled = computed(
+  () => counters.value.待处置台账 === counters.value.数据异常点数 + counters.value.待校准点数,
 )
+const reconcileText = computed(() =>
+  reconciled.value
+    ? `对账一致：数据异常 ${counters.value.数据异常点数} 点 + 待校准 ${counters.value.待校准点数} 点 = 待处置台账 ${counters.value.待处置台账} 条`
+    : `对账失败：台账 ${counters.value.待处置台账} 条 ≠ 异常 ${counters.value.数据异常点数} + 待校准 ${counters.value.待校准点数}，事务应整笔退回`,
+)
+
+function reload() {
+  errorMessage.value = ''
+  try {
+    const ledgerPayload = listCalibrationLedgers()
+    openLedgers.value = ledgerPayload.open
+    closedLedgers.value = ledgerPayload.closed
+    counters.value = ledgerPayload.counters
+    const allAlarms = listRowsSafe(meta.key)
+    genericRows.value = filterRows(allAlarms.filter((row) => !isLedger(row)), filters.value)
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : '告警台账读取失败'
+  }
+}
 
 function resetFilters() {
   filters.value = {}
@@ -105,11 +197,22 @@ function resetFilters() {
 }
 
 function exportRows() {
-  downloadEntries(meta.key)
+  // 校准台账不混进普通告警清单，台账口径在本页专区单独看。
+  downloadEntries(meta.key, genericRows.value)
 }
 
 function openCreate() {
   errorMessage.value = '告警事件登记入口尚未接入审批流'
+}
+
+function claim(id: number) {
+  errorMessage.value = ''
+  try {
+    startLedgerDisposal(id, store.operator)
+    reload()
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : '认领失败'
+  }
 }
 
 function runAction(action: string, row: EntryRow) {
@@ -122,16 +225,15 @@ function runAction(action: string, row: EntryRow) {
   reload()
 }
 
-function reload() {
-  errorMessage.value = ''
-  try {
-    const payload = listEntries(meta.key, filters.value)
-    rows.value = payload.items
-    total.value = payload.total
-  } catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : '告警事件列表读取失败'
-  }
-}
-
 onMounted(reload)
 </script>
+
+<style scoped>
+.block-title { font-size: 14px; margin: 16px 0 6px; }
+.block-title.second-block { margin-top: 22px; }
+.reconcile-line { margin: 0 0 8px; font-size: 12px; background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; }
+.ledger-table th, .ledger-table td { font-size: 12px; }
+.stat-alert { color: #b42318; }
+.closed-ledger { margin-top: 10px; font-size: 12px; color: var(--muted); }
+.closed-ledger summary { cursor: pointer; margin-bottom: 6px; }
+</style>

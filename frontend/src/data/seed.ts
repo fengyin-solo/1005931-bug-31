@@ -534,16 +534,21 @@ export const SEED_ROWS: Record<string, EntryRow[]> = {
     {
       "id": 1,
       "status": "监测中",
-      "pending": true,
+      "pending": false,
       "abnormal": false,
       "监测点编号": "IRRA-0001",
-      "设备型号": "辐照监测样例1",
-      "安装高度": "辐照监测样例1",
-      "当日辐照量": "辐照监测样例1",
-      "峰值辐照": "辐照监测样例1",
-      "组件温度": "辐照监测样例1",
-      "环境温度": "辐照监测样例1",
-      "监测状态": "辐照监测样例1"
+      "所属片区": "东区A方阵",
+      "设备型号": "TBQ-2 总辐射表",
+      "安装高度": 1.5,
+      "安装时间": "2025-11-20",
+      "当日辐照量": 5680,
+      "峰值辐照": 982,
+      "组件温度": 46,
+      "环境温度": 31,
+      "readings": [
+        { "at": "2026-10-03 18:00", "daily": 5420, "peak": 956, "moduleTemp": 45, "ambientTemp": 30, "ruleVersion": 1, "reasons": [] },
+        { "at": "2026-10-04 14:00", "daily": 5680, "peak": 982, "moduleTemp": 46, "ambientTemp": 31, "ruleVersion": 1, "reasons": [] }
+      ]
     },
     {
       "id": 2,
@@ -551,27 +556,206 @@ export const SEED_ROWS: Record<string, EntryRow[]> = {
       "pending": true,
       "abnormal": true,
       "监测点编号": "IRRA-0002",
-      "设备型号": "辐照监测样例2",
-      "安装高度": "辐照监测样例2",
-      "当日辐照量": "辐照监测样例2",
-      "峰值辐照": "辐照监测样例2",
-      "组件温度": "辐照监测样例2",
-      "环境温度": "辐照监测样例2",
-      "监测状态": "辐照监测样例2"
+      "所属片区": "东区A方阵",
+      "设备型号": "TBQ-2 总辐射表",
+      "安装高度": 1.5,
+      "安装时间": "2025-11-20",
+      "当日辐照量": null,
+      "峰值辐照": null,
+      "组件温度": null,
+      "环境温度": null,
+      "readings": [
+        { "at": "2026-10-03 18:00", "daily": 5388, "peak": 948, "moduleTemp": 44, "ambientTemp": 30, "ruleVersion": 1, "reasons": [] },
+        { "at": "2026-10-04 14:00", "daily": null, "peak": null, "moduleTemp": null, "ambientTemp": null, "ruleVersion": 1, "reasons": [] }
+      ]
     },
     {
       "id": 3,
       "status": "待校准",
-      "pending": false,
+      "pending": true,
       "abnormal": false,
       "监测点编号": "IRRA-0003",
-      "设备型号": "辐照监测样例3",
-      "安装高度": "辐照监测样例3",
-      "当日辐照量": "辐照监测样例3",
-      "峰值辐照": "辐照监测样例3",
-      "组件温度": "辐照监测样例3",
-      "环境温度": "辐照监测样例3",
-      "监测状态": "辐照监测样例3"
+      "所属片区": "东区B方阵",
+      "设备型号": "CMP11 总辐射表",
+      "安装高度": 1.8,
+      "安装时间": "2025-12-05",
+      "当日辐照量": null,
+      "峰值辐照": 1320,
+      "组件温度": 51,
+      "环境温度": 33,
+      "readings": [
+        { "at": "2026-10-03 18:00", "daily": 5560, "peak": 975, "moduleTemp": 47, "ambientTemp": 31, "ruleVersion": 1, "reasons": [] },
+        { "at": "2026-10-04 14:00", "daily": 9640, "peak": 1320, "moduleTemp": 51, "ambientTemp": 33, "ruleVersion": 1, "reasons": [] }
+      ]
+    },
+    {
+      "id": 4,
+      "status": "数据异常",
+      "pending": true,
+      "abnormal": true,
+      "监测点编号": "IRRA-0004",
+      "所属片区": "东区B方阵",
+      "设备型号": "TBQ-2 总辐射表",
+      "安装高度": 1.5,
+      "安装时间": "2026-01-12",
+      "当日辐照量": null,
+      "峰值辐照": 560,
+      "组件温度": 44,
+      "环境温度": 30,
+      "readings": [
+        { "at": "2026-10-03 18:00", "daily": 5502, "peak": 968, "moduleTemp": 45, "ambientTemp": 30, "ruleVersion": 1, "reasons": [] },
+        { "at": "2026-10-04 14:00", "daily": 8200, "peak": 560, "moduleTemp": 44, "ambientTemp": 30, "ruleVersion": 1, "reasons": [] }
+      ]
+    },
+    {
+      "id": 5,
+      "status": "监测中",
+      "pending": false,
+      "abnormal": false,
+      "监测点编号": "IRRA-0005",
+      "所属片区": "西区C方阵",
+      "设备型号": "CMP11 总辐射表",
+      "安装高度": 2.0,
+      "安装时间": "2026-02-18",
+      "当日辐照量": 5410,
+      "峰值辐照": 951,
+      "组件温度": 45,
+      "环境温度": 30,
+      "readings": [
+        { "at": "2026-10-03 18:00", "daily": 5295, "peak": 932, "moduleTemp": 44, "ambientTemp": 29, "ruleVersion": 1, "reasons": [] },
+        { "at": "2026-10-04 14:00", "daily": 5410, "peak": 951, "moduleTemp": 45, "ambientTemp": 30, "ruleVersion": 1, "reasons": [] }
+      ]
+    },
+    {
+      "id": 6,
+      "status": "待校准",
+      "pending": true,
+      "abnormal": false,
+      "监测点编号": "IRRA-0006",
+      "所属片区": "西区C方阵",
+      "设备型号": "TBQ-2 总辐射表",
+      "安装高度": 1.5,
+      "安装时间": "2026-03-02",
+      "当日辐照量": null,
+      "峰值辐照": null,
+      "组件温度": null,
+      "环境温度": null,
+      "readings": [
+        { "at": "2026-10-03 18:00", "daily": 5330, "peak": 940, "moduleTemp": 44, "ambientTemp": 29, "ruleVersion": 1, "reasons": [] },
+        { "at": "2026-10-04 14:00", "daily": null, "peak": null, "moduleTemp": null, "ambientTemp": null, "ruleVersion": 1, "reasons": [] }
+      ]
+    },
+    {
+      "id": 7,
+      "status": "数据异常",
+      "pending": true,
+      "abnormal": true,
+      "监测点编号": "IRRA-0007",
+      "所属片区": "西区D方阵",
+      "设备型号": "CMP10 总辐射表",
+      "安装高度": 1.6,
+      "安装时间": "2026-04-22",
+      "当日辐照量": null,
+      "峰值辐照": 918,
+      "组件温度": 92,
+      "环境温度": 32,
+      "readings": [
+        { "at": "2026-10-03 18:00", "daily": 5210, "peak": 925, "moduleTemp": 46, "ambientTemp": 30, "ruleVersion": 1, "reasons": [] },
+        { "at": "2026-10-04 14:00", "daily": 5340, "peak": 918, "moduleTemp": 92, "ambientTemp": 32, "ruleVersion": 1, "reasons": [] }
+      ]
+    },
+    {
+      "id": 8,
+      "status": "监测中",
+      "pending": false,
+      "abnormal": false,
+      "监测点编号": "IRRA-0008",
+      "所属片区": "西区D方阵",
+      "设备型号": "TBQ-2 总辐射表",
+      "安装高度": 1.5,
+      "安装时间": "2026-05-08",
+      "当日辐照量": 5525,
+      "峰值辐照": 963,
+      "组件温度": 46,
+      "环境温度": 31,
+      "readings": [
+        { "at": "2026-10-03 18:00", "daily": 7900, "peak": 520, "moduleTemp": 45, "ambientTemp": 30, "ruleVersion": 1, "reasons": [] },
+        { "at": "2026-10-04 14:00", "daily": 5525, "peak": 963, "moduleTemp": 46, "ambientTemp": 31, "ruleVersion": 1, "reasons": [] }
+      ]
+    },
+    {
+      "id": 9,
+      "status": "已停用",
+      "pending": false,
+      "abnormal": false,
+      "监测点编号": "IRRA-0009",
+      "所属片区": "南区E方阵",
+      "设备型号": "TBQ-2 总辐射表",
+      "安装高度": 1.5,
+      "安装时间": "2025-08-30",
+      "当日辐照量": 5180,
+      "峰值辐照": 912,
+      "组件温度": 43,
+      "环境温度": 29,
+      "readings": [
+        { "at": "2026-09-28 18:00", "daily": 5180, "peak": 912, "moduleTemp": 43, "ambientTemp": 29, "ruleVersion": 1, "reasons": [] }
+      ]
+    },
+    {
+      "id": 10,
+      "status": "监测中",
+      "pending": false,
+      "abnormal": false,
+      "监测点编号": "IRRA-0010",
+      "所属片区": "南区E方阵",
+      "设备型号": "CMP11 总辐射表",
+      "安装高度": 1.8,
+      "安装时间": "2026-06-15",
+      "当日辐照量": 5472,
+      "峰值辐照": 958,
+      "组件温度": 45,
+      "环境温度": 30,
+      "readings": [
+        { "at": "2026-10-03 18:00", "daily": 5360, "peak": 944, "moduleTemp": 44, "ambientTemp": 30, "ruleVersion": 1, "reasons": [] },
+        { "at": "2026-10-04 14:00", "daily": 5472, "peak": 958, "moduleTemp": 45, "ambientTemp": 30, "ruleVersion": 1, "reasons": [] }
+      ]
+    },
+    {
+      "id": 11,
+      "status": "数据异常",
+      "pending": true,
+      "abnormal": true,
+      "监测点编号": "IRRA-0011",
+      "所属片区": "南区F方阵",
+      "设备型号": "CMP10 总辐射表",
+      "安装高度": 1.6,
+      "安装时间": "2026-07-21",
+      "当日辐照量": null,
+      "峰值辐照": 1620,
+      "组件温度": 47,
+      "环境温度": 31,
+      "readings": [
+        { "at": "2026-10-03 18:00", "daily": 5498, "peak": 961, "moduleTemp": 45, "ambientTemp": 30, "ruleVersion": 1, "reasons": [] },
+        { "at": "2026-10-04 14:00", "daily": 5580, "peak": 1620, "moduleTemp": 47, "ambientTemp": 31, "ruleVersion": 1, "reasons": [] }
+      ]
+    },
+    {
+      "id": 12,
+      "status": "监测中",
+      "pending": false,
+      "abnormal": false,
+      "监测点编号": "IRRA-0012",
+      "所属片区": "南区F方阵",
+      "设备型号": "CMP11 总辐射表",
+      "安装高度": 2.0,
+      "安装时间": "2026-09-18",
+      "当日辐照量": 5605,
+      "峰值辐照": 972,
+      "组件温度": 46,
+      "环境温度": 31,
+      "readings": [
+        { "at": "2026-10-04 14:00", "daily": 5605, "peak": 972, "moduleTemp": 46, "ambientTemp": 31, "ruleVersion": 1, "reasons": [] }
+      ]
     }
   ],
   "tooling": [
