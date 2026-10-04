@@ -35,3 +35,59 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .error-text { color: #b42318; }
 .status-legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 10px; font-size: 12px; color: var(--muted); }
 .legend-item { background: #eef2f7; border-radius: 999px; padding: 2px 10px; }
+.legend-bad { background: #fee4e2; color: #b42318; }
+
+/* 角色切换 */
+.head-user { display: flex; align-items: center; gap: 12px; }
+.role-switch { font-size: 12px; display: flex; align-items: center; gap: 6px; }
+.role-switch select { padding: 3px 6px; border-radius: 6px; border: 1px solid var(--border); font-size: 12px; max-width: 320px; }
+.shift-text { white-space: nowrap; }
+
+/* 辐照监测 */
+.stat-alert { border-color: #f04438; background: #fff5f5; }
+.stat-ok { border-color: #12b76a; background: #f0fdf6; }
+.irr-table .num { text-align: right; white-space: nowrap; }
+.cell-sub { color: var(--muted); font-size: 12px; font-weight: normal; }
+.cell-warn { color: #b42318; }
+.device-cell { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; }
+.tag { display: inline-block; border-radius: 999px; padding: 1px 8px; font-size: 12px; line-height: 18px; }
+.tag-bad { background: #fee4e2; color: #b42318; }
+.tag-wait { background: #fef0c7; color: #b54708; }
+.tag-ok { background: #d1fadf; color: #027a48; }
+.status-dot { font-size: 13px; }
+.stt-监测中 { color: #027a48; }
+.stt-数据异常 { color: #b42318; font-weight: 600; }
+.stt-待校准 { color: #b54708; font-weight: 600; }
+.stt-已停用 { color: var(--muted); }
+.row-selected { background: #eff8ff; }
+.filter-sep { color: var(--border); }
+.filter-item.locate input { min-width: 140px; }
+.pager { display: inline-flex; gap: 4px; align-items: center; }
+.pager .btn { padding: 3px 9px; }
+.feedback { margin-top: 8px; padding: 8px 12px; border-radius: 8px; font-size: 13px; }
+.fb-ok { background: #ecfdf3; color: #027a48; border: 1px solid #abefc6; }
+.fb-err { background: #fef3f2; color: #b42318; border: 1px solid #fecdca; }
+.panel { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin: 14px 0; }
+.panel h3 { margin: 0 0 10px; font-size: 14px; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.panel-head h3 { margin: 0; }
+.data-table.mini { font-size: 12px; }
+.data-table.mini th, .data-table.mini td { padding: 6px 8px; }
+.detail-panel .detail-grid { display: grid; grid-template-columns: 320px 1fr; gap: 16px; }
+.detail-block h4 { margin: 0 0 8px; font-size: 13px; }
+.detail-block dl { display: grid; grid-template-columns: 84px 1fr; gap: 6px 8px; margin: 0; font-size: 13px; }
+.detail-block dt { color: var(--muted); }
+.detail-block dd { margin: 0; }
+.inline-form { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; }
+.form-line { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 8px; }
+.form-line label, .modal-line { font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+.form-line input, .rules-form input, .modal-line input, .modal-line select, .modal-line textarea {
+  border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; font-size: 13px; min-width: 110px;
+}
+.rules-form { margin-top: 8px; }
+.modal-mask { position: fixed; inset: 0; background: rgba(16, 24, 40, 0.45); display: flex; align-items: center; justify-content: center; z-index: 50; }
+.modal { background: #fff; border-radius: 10px; padding: 18px 20px; width: 480px; max-width: calc(100vw - 32px); }
+.modal h3 { margin: 0 0 8px; }
+.modal-line { margin: 10px 0; }
+.modal-line select, .modal-line input, .modal-line textarea { width: 100%; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }

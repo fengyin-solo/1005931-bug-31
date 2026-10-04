@@ -1,5 +1,6 @@
 import { MODULE_BY_KEY } from '@/data/modules'
 import { allRows, listRows, resetRows, saveRows } from '@/data/local-store'
+import { pendingLedger, stats as irradianceStats } from '@/data/irradiance/service'
 import type { ActionResult, EntryRow, ModuleMeta, OverviewResult, PageResult } from '@/data/types'
 
 // 会写进数据的「往回走」动作：命中就把这条记录标成异常态，看板上能一眼看出来。
@@ -86,7 +87,18 @@ export function downloadEntries(key: string): void {
 
 export function loadOverview(): OverviewResult {
   const rows = allRows()
+  const irrStats = irradianceStats()
+  const irrPendingAlarms = pendingLedger()
   const modules = [...MODULE_BY_KEY.values()].map((meta) => {
+    if (meta.key === 'irradiance') {
+      // 辐照模块已迁入独立领域库，待处置/异常按领域口径汇总
+      return {
+        name: meta.name,
+        created: irrStats.total,
+        pending: irrStats.pendingCalibration + irrPendingAlarms.length,
+        abnormal: irrStats.abnormal,
+      }
+    }
     const entries = rows[meta.key] ?? []
     return {
       name: meta.name,
